@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Run the code checker from the web.
+ * Run the DSV organization from the Web.
  *
- * @package    local_codechecker
+ * @package    local_dsv_organization
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
