@@ -68,7 +68,7 @@ function print_user_affiliation() {
             $unitnames[] =(string)$unit->designation;
         }
 
-        $table->data[] = array($user->username, $details->person->firstName.' '.$details->person->lastName, implode(",", $unitnames));
+        $table->data[] = array($user->username, $details->person->firstName.' '.$details->person->lastName, implode(", ", $unitnames));
     }
 
     echo html_writer::table($table);
