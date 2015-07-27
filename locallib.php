@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once($CFG->dirroot . '/cohort/lib.php');
+
 function extract_user_details($user) {
     $username = get_config('local_dsv_organization', 'username');
     $password = get_config('local_dsv_organization', 'password');
@@ -106,9 +108,14 @@ function update_cohorts($print = false) {
         $unitnames = array();
         foreach ($units as $unit) {
             $unitnames[] =(string)$unit->designation;
-            $cohortid = $DB->get_field('cohort', 'id', array('idnumber' => $unitmap[(string)$unit->designation]));
-            if ($cohortid) {
-                cohort_add_member($cohortid, $user->id);
+            $cohort = $DB->get_record('cohort', array('idnumber' => $unitmap[(string)$unit->designation]));
+            if ($cohort) {
+                if (!cohort_is_member($cohort->id, $user->id)) {
+                    cohort_add_member($cohort->id, $user->id);
+                    if (!$print) {
+                        echo "Adding ".fullname($user)." (".$user->username.") to ".$cohort->name."\r\n";
+                    }
+                }
             }
         }
 

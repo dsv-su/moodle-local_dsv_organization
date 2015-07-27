@@ -22,8 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version   = 2015072400;            // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014050800;           // Requires this Moodle version.
-$plugin->component = 'local_dsv_organization';        // Full name of the plugin (used for diagnostics).
+$plugin->version   = 2015072701;				// The current plugin version (Date: YYYYMMDDXX)
+$plugin->requires  = 2014050800;				// Requires this Moodle version.
+$plugin->component = 'local_dsv_organization';	// Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '0.8.0';
+$plugin->release   = '0.9.0';

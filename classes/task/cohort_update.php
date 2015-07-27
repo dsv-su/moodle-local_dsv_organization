@@ -15,25 +15,37 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Run the DSV organization from the Web.
+ * A scheduled task.
  *
  * @package    local_dsv_organization
- * @copyright  2011 The Open University
+ * @copyright  2015 Stockholm University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-set_time_limit(500);
+namespace local_dsv_organization\task;
 
-require_once(__DIR__ . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->dirroot . '/local/dsv_organization/locallib.php');
+/**
+ * Simple task to run the cohort update script.
+ **/
 
-require_login();
+class cohort_update extends \core\task\scheduled_task {      
 
-admin_externalpage_setup('local_dsv_organization_fetch', '');
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
+    public function get_name() {
+        return get_string('pluginmenuname', 'local_dsv_organization');
+    }
 
-echo $OUTPUT->header();
-
-update_cohorts(true);
-
-echo $OUTPUT->footer();
+    /**
+     * Do the job.
+     * Throw exceptions on errors (the job will be retried).
+     */
+    public function execute() {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/dsv_organization/locallib.php');
+        update_cohorts();
+    }
+}

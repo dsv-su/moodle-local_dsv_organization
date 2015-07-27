@@ -18,17 +18,20 @@
  * Definition of local_dsv_organization scheduled tasks.
  *
  * @package   local_dsv_organization
+ * @category  task
  * @copyright 2015 Pavel Sokolov <pavel.m.sokolov@gmail.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace local_dsv_organization\task;
 
 defined('MOODLE_INTERNAL') || die();
 
 $tasks = array(
     array(
-        'classname' => 'enrol_rest\task\cron_task',
+        'classname' => 'local_dsv_organization\task\cohort_update',
         'blocking' => 0,
-        'minute' => '*/10',
+        'minute' => '*/30',
         'hour' => '*',
         'day' => '*',
         'month' => '*',
