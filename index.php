@@ -29,6 +29,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/dsv_organization/locallib.php');
 
 require_login();
+require_capability('moodle/site:config', context_system::instance());
 
 admin_externalpage_setup('local_dsv_organization_fetch', '');
 
