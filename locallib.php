@@ -77,6 +77,15 @@ function print_user_affiliation() {
 
 }
 
+function extract_cohort($unit) {
+    global $DB, $unitmap;
+    return $DB->get_record('cohort', array('idnumber' => $unit));
+}
+
+function extract_cohort_id($cohort) {
+    return $cohort->id;
+}
+
 function update_cohorts($print = false) {
     global $DB;
 
@@ -99,16 +108,39 @@ function update_cohorts($print = false) {
         $table->head = array('Username', 'Name', 'Units');
     }
 
+    $cohorts = cohort_get_cohorts(1);
+
     foreach ($users as $user) {
         $details = extract_user_details($user);
 
         if (!$details) {continue;}
 
         $units = $details->departments->units;
+        $userunits = array();
         $unitnames = array();
+        $usercohorts = array();
+
         foreach ($units as $unit) {
             $unitnames[] =(string)$unit->designation;
-            $cohort = $DB->get_record('cohort', array('idnumber' => $unitmap[(string)$unit->designation]));
+            $userunits[] = extract_cohort($unitmap[(string)$unit->designation]);
+        }
+
+        foreach ($cohorts['cohorts'] as $cohort) {
+            if (cohort_is_member($cohort->id, $user->id)) {
+                $usercohorts[] = $cohort;
+            }
+        }
+
+//var_dump($userunits);
+//var_dump(array_map("extract_cohort_id", $userunits));
+//var_dump(array_map("extract_cohort_id", $usercohorts));
+
+$cohortidstoadd = array_diff($userunits, $usercohorts);
+$cohortidstoremove = array_diff($usercohorts, $userunits);
+echo "user ".$user->username;
+if (count($cohortidstoremove)) {var_dump($cohortidstoremove)}
+if (count($cohortidstoadd)) {var_dump($cohortidstoadd)}
+/*
             if ($cohort) {
                 if (!cohort_is_member($cohort->id, $user->id)) {
                     cohort_add_member($cohort->id, $user->id);
@@ -118,10 +150,12 @@ function update_cohorts($print = false) {
                 }
             }
         }
+*/
 
         if ($print) {
-            $table->data[] = array($user->username, $details->person->firstName.' '.$details->person->lastName, implode(",", $unitnames));
+            $table->data[] = array($user->username, $details->person->firstName.' '.$details->person->lastName, implode(", ", $unitnames));
         }
+//        break;
     }
 
     if ($print) {
