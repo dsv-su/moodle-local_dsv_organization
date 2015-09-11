@@ -109,20 +109,26 @@ function update_cohorts($print = false) {
     }
 
     $cohorts = cohort_get_cohorts(1);
+    foreach ($cohorts['cohorts'] as $k => $cohort) {
+        if (!in_array($cohort->idnumber, $unitmap)) {
+            unset($cohorts['cohorts'][$k]);
+        }
+    }
 
     foreach ($users as $user) {
         $details = extract_user_details($user);
 
         if (!$details) {continue;}
 
-        $units = $details->departments->units;
         $userunits = array();
         $unitnames = array();
         $usercohorts = array();
 
-        foreach ($units as $unit) {
-            $unitnames[] =(string)$unit->designation;
-            $userunits[] = extract_cohort($unitmap[(string)$unit->designation]);
+        foreach ($details->departments as $department) {
+            foreach ($department->units as $unit) {
+                $unitnames[] =(string)$unit->designation;
+                $userunits[] = extract_cohort($unitmap[(string)$unit->designation]);
+            }
         }
 
         foreach ($cohorts['cohorts'] as $cohort) {
@@ -131,16 +137,28 @@ function update_cohorts($print = false) {
             }
         }
 
-//var_dump($userunits);
-//var_dump(array_map("extract_cohort_id", $userunits));
-//var_dump(array_map("extract_cohort_id", $usercohorts));
-
-$cohortidstoadd = array_diff($userunits, $usercohorts);
-$cohortidstoremove = array_diff($usercohorts, $userunits);
-echo "user ".$user->username;
-if (count($cohortidstoremove)) {var_dump($cohortidstoremove)}
-if (count($cohortidstoadd)) {var_dump($cohortidstoadd)}
-/*
+        $userunits = array_map("extract_cohort_id", $userunits);
+        $usercohorts = array_map("extract_cohort_id", $usercohorts);
+        $cohortidstoadd = array_diff($userunits, $usercohorts);
+        $cohortidstoremove = array_diff($usercohorts, $userunits);
+        if (count($cohortidstoremove)) {
+            foreach ($cohortidstoremove as $cohortid) {
+                //if (!$print) {
+                    $cohortname = $DB->get_field('cohort', 'name', array('id'=>$cohortid));
+                    echo "Removing ".fullname($user)." (".$user->username.") from ".$cohortname."\r\n";
+                //}
+            }
+        }
+        if (count($cohortidstoadd)) {
+            foreach ($cohortidstoadd as $cohortid) {
+                cohort_add_member($cohortid, $user->id);
+                //if (!$print) {
+                    $cohortname = $DB->get_field('cohort', 'name', array('id'=>$cohortid));
+                    echo "Adding ".fullname($user)." (".$user->username.") to ".$cohortname."\r\n";
+               // }
+            }
+        }
+    /*
             if ($cohort) {
                 if (!cohort_is_member($cohort->id, $user->id)) {
                     cohort_add_member($cohort->id, $user->id);
@@ -155,7 +173,6 @@ if (count($cohortidstoadd)) {var_dump($cohortidstoadd)}
         if ($print) {
             $table->data[] = array($user->username, $details->person->firstName.' '.$details->person->lastName, implode(", ", $unitnames));
         }
-//        break;
     }
 
     if ($print) {
