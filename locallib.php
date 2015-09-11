@@ -145,10 +145,10 @@ function update_cohorts($print = false) {
             foreach ($cohortidstoremove as $cohortid) {
                 if ($cohortid) {
                     cohort_remove_member($cohortid, $user->id);
-                    //if (!$print) {
+                    if (!$print) {
                     $cohortname = $DB->get_field('cohort', 'name', array('id'=>$cohortid));
                     echo "Removing ".fullname($user)." (".$user->username.") from ".$cohortname."\r\n";
-                    //}
+                    }
                 }
             }
         }
@@ -156,24 +156,13 @@ function update_cohorts($print = false) {
             foreach ($cohortidstoadd as $cohortid) {
                 if ($cohortid) {
                     cohort_add_member($cohortid, $user->id);
-                    //if (!$print) {
+                    if (!$print) {
                     $cohortname = $DB->get_field('cohort', 'name', array('id'=>$cohortid));
                     echo "Adding ".fullname($user)." (".$user->username.") to ".$cohortname."\r\n";
-                    // }
-                }
-            }
-        }
-    /*
-            if ($cohort) {
-                if (!cohort_is_member($cohort->id, $user->id)) {
-                    cohort_add_member($cohort->id, $user->id);
-                    if (!$print) {
-                        echo "Adding ".fullname($user)." (".$user->username.") to ".$cohort->name."\r\n";
                     }
                 }
             }
         }
-*/
 
         if ($print) {
             $table->data[] = array($user->username, $details->person->firstName.' '.$details->person->lastName, implode(", ", $unitnames));
